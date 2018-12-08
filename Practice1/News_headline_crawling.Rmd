@@ -7,22 +7,96 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+In this session, we search specific keyword on 'NAVER' and crawl news headlines related to keyword.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Special Thanks to following reference.
+https://kuduz.tistory.com/1041?category=412112
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Initial settings
 
-```{r cars}
-summary(cars)
+```{r initialset}
+rm(list=ls())
+
+
+# Load multiple required packages at once
+
+packages = c('rvest', 'dplyr')
+lapply(packages, require, character.only = T) 
+## Character.only = T means elements in 'packages' can be assumed to be character stirngs.
 ```
 
-## Including Plots
+## Crawling urls
 
-You can also embed plots, for example:
+We put 'samsung biologics' as a keyword to search. 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r putkeyword}
+# Keyword 'samsung biologics', Saving search outputs in 'basic_url' vectors 
+basic_url = 'https://search.naver.com/search.naver?where=news&sm=tab_jum&query=%22samsung+biologics%22&start=' ## query=%22samsung+biologics shows user put search word as 'biologics'
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Since Naver shows 10 outputs in one page, we attach number in 10 step size to basic_url 
+```{r urls}
+urls = NULL
+for (x in 0:5){
+  urls[x + 1] = paste0(basic_url, (x * 10) + 1) ## paste0 concatenate vectors after converting characters without space
+}
+
+urls
+```
+
+
+Read html using 'rvest' package
+```{r sample}
+#Sample
+read_html(urls[1])
+```
+
+In HTML of search result page, each news' link is written after '<a href='. Here, 'a' is a tag and 'a' tag is included in "thumb" class in 'div' tag and 'href' is a attribute in HTML.
+
+
+Finding links indicating each news in html
+We use 'html_nodes' function to get specific tag and 'html_attr to get specific attribute.
+
+```{r links}
+# Create 'links' vector to save links related to each news
+links = NULL
+
+# Saving each url in urls vector
+for (url in urls) {
+  html = read_html(url)
+  links = c(links, html %>% html_nodes('.thumb') %>% html_nodes('a') 
+            %>% html_attr('href') %>% unique())
+  ## '.' indicates 'thumb' is class
+  ## 'unique' function helps filtering redundant links.
+}
+
+
+# Show first 6 urls
+head(links)
+
+# Filtering news from specific jounal, for example Yeonhap news 
+links_yna = links[grep("yna", links)]
+
+# Show first 6 urls
+head(links_yna)
+```
+
+## Crawling news headline
+```{r headline}
+headlines = NULL
+
+for (link in links) {
+  html = read_html(link)
+  headlines = c(headlines, html %>% html_nodes('title') %>% html_text())
+}
+
+# Show first 6 urls
+head(headlines)
+```
+
+Saving results as csv file
+```{r saving}
+write.csv(headlines, "Samsung_biologics_headlines.csv")
+
+```
+
