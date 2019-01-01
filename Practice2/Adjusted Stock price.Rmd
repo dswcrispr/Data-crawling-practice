@@ -41,7 +41,7 @@ We use date and end price data. They are included in 'item' tag and 'date' attri
 First, we read html and scrape all data from url.
 ```{r geturl}
 ticker = "005930"
-url = paste0("https://fchart.stock.naver.com/sise.nhn?symbol=",ticker,"&timeframe=day&count=500&requestType=0") # Using 'for loop' we can download multiple stock items' data 
+url = paste0("https://fchart.stock.naver.com/sise.nhn?symbol=",ticker,"&timeframe=day&count=1000&requestType=0") # Using 'for loop' we can download multiple stock items' data 
 
 # Read HTML
 data = GET(url) %>% read_html %>% html_nodes("item") %>% html_attr("data")

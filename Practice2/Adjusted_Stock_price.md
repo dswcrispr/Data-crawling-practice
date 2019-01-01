@@ -55,7 +55,7 @@ First, we read html and scrape all data from url.
 
 ``` r
 ticker = "005930"
-url = paste0("https://fchart.stock.naver.com/sise.nhn?symbol=",ticker,"&timeframe=day&count=500&requestType=0") # Using 'for loop' we can download multiple stock items' data 
+url = paste0("https://fchart.stock.naver.com/sise.nhn?symbol=",ticker,"&timeframe=day&count=1000&requestType=0") # Using 'for loop' we can download multiple stock items' data 
 
 # Read HTML
 data = GET(url) %>% read_html %>% html_nodes("item") %>% html_attr("data")
@@ -82,20 +82,20 @@ head(data)
 ```
 
     ##         X1    X2
-    ## 1 20161213 35320
-    ## 2 20161214 35540
-    ## 3 20161215 35180
-    ## 4 20161216 35860
-    ## 5 20161219 35900
-    ## 6 20161220 36240
+    ## 1 20141203 25960
+    ## 2 20141204 26000
+    ## 3 20141205 26040
+    ## 4 20141208 26380
+    ## 5 20141209 26980
+    ## 6 20141210 26340
 
 ``` r
 str(data)
 ```
 
-    ## 'data.frame':    500 obs. of  2 variables:
-    ##  $ X1: Factor w/ 500 levels "20161213","20161214",..: 1 2 3 4 5 6 7 8 9 10 ...
-    ##  $ X2: Factor w/ 353 levels "35320","35540",..: 1 2 3 4 5 6 7 8 9 10 ...
+    ## 'data.frame':    1000 obs. of  2 variables:
+    ##  $ X1: Factor w/ 1000 levels "20141203","20141204",..: 1 2 3 4 5 6 7 8 9 10 ...
+    ##  $ X2: Factor w/ 654 levels "25960","26000",..: 1 2 3 4 5 6 7 8 9 10 ...
 
 Data Cleansing
 --------------
@@ -127,12 +127,12 @@ head(data)
 ```
 
     ##         date Price
-    ## 1 2016-12-13 35320
-    ## 2 2016-12-14 35540
-    ## 3 2016-12-15 35180
-    ## 4 2016-12-16 35860
-    ## 5 2016-12-19 35900
-    ## 6 2016-12-20 36240
+    ## 1 2014-12-03 25960
+    ## 2 2014-12-04 26000
+    ## 3 2014-12-05 26040
+    ## 4 2014-12-08 26380
+    ## 5 2014-12-09 26980
+    ## 6 2014-12-10 26340
 
 ``` r
 ggplot(data, aes(date, Price)) + geom_line() + labs(title = "Samsung Electronics")
