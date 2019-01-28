@@ -1,0 +1,136 @@
+---
+title: "KOSPI_data"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+In this page, we scrape basic stock market data for each KOSPI stock from NAVER finance.
+
+Special thanks to following refernece.
+http://henryquant.blogspot.com/search?updated-max=2018-11-12T21:23:0%2B09:00&max-results=1&pgno=2
+
+
+We start from market cap page for KOSPI in NAVER finance. 
+https://finance.naver.com/sise/sise_market_sum.nhn?sosok=0&page=1
+
+We need to check two things in HTML of this url.
+
+1. ticker for each stock item 
+: This information is loacated at 'tbody' tag -> 'td' tag -> 'a' tag -> 'href' attribution.
+
+2. How many pages for all stock items in KOSPI
+: This information  is loacated at 'pgRR' class -> 'a' tag -> 'href' attribution. There are 31 pages for KOSPI
+
+
+## Initial settings
+```{r initalset}
+rm(list=ls())
+options(warn = -1) # suppressing warning message
+
+# Load multiple required packages at once
+packages = c('rvest', 'dplyr', 'httr')
+suppressMessages(lapply(packages, require, character.only = T, quietly = TRUE)) 
+
+## Character.only = T means elements in 'packages' can be assumed to be character stirngs.
+```
+
+
+## Check URL
+url_0 contains initial financial index such as 'market capitalization', 'PER', etc.
+
+url_0 = "https://finance.naver.com/sise/sise_market_sum.nhn?sosok=0&page=1"
+
+In this url_0, we only check 6 indexes at most. However, from Network tab on Developer's tool, we can get the solution how to bring all hiden indexes to one page.
+
+url_1 is the solution we found.
+
+url_1 = "https://finance.naver.com/sise/field_submit.nhn?menu=market_sum&returnUrl=http%3A%2F%2Ffinance.naver.com%2Fsise%2Fsise_market_sum.nhn%3Fsosok%3D0%26page%3D1&fieldIds=operating_profit&fieldIds=property_total&fieldIds=operating_profit_increasing_rate&fieldIds=debt_total&fieldIds=sales&fieldIds=sales_increasing_rate&fieldIds=quant&fieldIds=market_sum&fieldIds=per&fieldIds=roe&fieldIds=frgn_rate&fieldIds=listed_stock_cnt&fieldIds=net_income&fieldIds=roa&fieldIds=eps&fieldIds=pbr&fieldIds=dividend&fieldIds=reserve_ratio"
+
+
+## Check how many pages exist for KOSPI stock data
+```{r check}
+url_0 = "https://finance.naver.com/sise/sise_market_sum.nhn?sosok=0&page=1"
+
+down_table = GET(url_0)
+
+# we can check this page is encoded with 'EUC-KR' type.
+down_table
+
+page_final = read_html(down_table, encoding = "EUC-KR") %>% html_nodes(".pgRR") %>%
+  html_nodes("a") %>% html_attr("href")
+
+# This shows the final page is 31st
+page_final 
+
+# Extract '31' from 'page_final' and convert it numeric type 
+num_of_page = unlist(strsplit(page_final, "="))[3] %>% as.numeric()
+```
+
+## Financial data Crawling
+
+Using loop, scrapping stock market data in url_1 through whole pages.
+
+``` {r crawling}
+# Create list 'data'
+data = list()
+
+# Make loop 
+
+for (i in 1:num_of_page) {
+  url_1 = paste0("https://finance.naver.com/sise/field_submit.nhn?menu=market_sum&returnUrl=http%3A%2F%2Ffinance.naver.com%2Fsise%2Fsise_market_sum.nhn%3Fsosok%3D0%26page%3D",i,"&fieldIds=operating_profit&fieldIds=property_total&fieldIds=operating_profit_increasing_rate&fieldIds=debt_total&fieldIds=sales&fieldIds=sales_increasing_rate&fieldIds=quant&fieldIds=market_sum&fieldIds=per&fieldIds=roe&fieldIds=frgn_rate&fieldIds=listed_stock_cnt&fieldIds=net_income&fieldIds=roa&fieldIds=eps&fieldIds=pbr&fieldIds=dividend&fieldIds=reserve_ratio")
+  down_table_1 = GET(url_1)
+  
+  Sys.setlocale("LC_ALL", "English") 
+  # this code sets local language as English.
+  # It is important to prevent displaying error.
+                                     
+  table = read_html(down_table_1, encoding = "EUC-KR") %>% html_table(fill = TRUE)
+  table = table[[2]]  # 'read_table' read table format information only
+  
+  # Reset locale language to Korean again
+  Sys.setlocale("LC_ALL", "Korean")
+
+  # Delete last column in table because last column has no useful information 
+  table[, ncol(table)] = NULL
+  table = na.omit(table) # delete 'NA' elements
+  
+  # Extract each stock item's ticker
+  symbol = read_html(down_table_1, encoding = "EUC-KR") %>% html_nodes("tbody") %>% html_nodes("td") %>% html_nodes("a") %>% html_attr("href")
+  
+  symbol = sapply(symbol, function(x) { # Note that sapply returns vector
+    substr(x, nchar(x) - 5, nchar(x)) 
+    # 'substr' function extracts characters in designated location
+  }) %>% unique() # 'unique' function removes duplicate elements
+  
+  # Combine 'symbol' data with 'table'
+  table$N = symbol
+  colnames(table)[1] = "Ticker"
+  
+  rownames(table) = NULL
+  data[[i]] = table # saving each page's table in 'data_0' list
+  
+  Sys.sleep(0.5)
+}
+
+data = do.call(rbind, data)
+data$market = "KS"
+
+### Difference between 'lapply' and 'do.call'
+# If we would use 'lapply', R would apply function to every element of the list. On the other hand, If we use 'do.call', R apply function to list itself.
+```
+
+## Data Cleansing and save result as csv file
+```{r save}
+data = data[which(data$액면가 != "0"), ]   # filtering ETF, ETN
+data = data[which(data$매출액 != "N/A"), ] # filtering preferred 
+
+# Show first 6 rows
+head(data)
+
+# Save in csv file
+write.csv(data, "KOSPI_data.csv")
+```
+
