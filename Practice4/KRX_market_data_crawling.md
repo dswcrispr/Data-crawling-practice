@@ -9,8 +9,8 @@ Second, we download valuation indexes such as EPS, PER and BPS for each stock it
 
 Special thanks to following refernece. <http://henryquant.blogspot.com/search/label/ETC?updated-max=2019-01-25T22:15:0%2B09:00&max-results=1&pgno=1>
 
-1. Stock data categoraized by industry
-======================================
+1.Stock data categoraized by industry
+=====================================
 
 Initial settings
 ----------------
@@ -108,8 +108,8 @@ head(down)
 write.csv(down, 'krxdata_sector.csv')
 ```
 
-2. Valuation indexes data for each stock item
-=============================================
+2.Valuation indexes data for each stock item
+============================================
 
 We follow same process we used to download stock data categorized by sector.
 
