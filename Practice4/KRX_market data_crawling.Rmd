@@ -17,7 +17,7 @@ Special thanks to following refernece.
 http://henryquant.blogspot.com/search/label/ETC?updated-max=2019-01-25T22:15:0%2B09:00&max-results=1&pgno=1
 
 
-# 1.Stock data categoraized by industry
+# 1.Stock data categorized by industry
 
 ## Initial settings
 ```{r initalset}

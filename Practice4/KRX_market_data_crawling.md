@@ -9,8 +9,8 @@ Second, we download valuation indexes such as EPS, PER and BPS for each stock it
 
 Special thanks to following refernece. <http://henryquant.blogspot.com/search/label/ETC?updated-max=2019-01-25T22:15:0%2B09:00&max-results=1&pgno=1>
 
-1.Stock data categoraized by industry
-=====================================
+1.Stock data categorized by industry
+====================================
 
 Initial settings
 ----------------
@@ -167,9 +167,9 @@ head(down_value)
     ## 1 036810 에프에스티~        5460 624   8.75   4,088 1.34                 1.47
     ## 2 043100 솔고바이오~         446 -     -      366   1.22                 0   
     ## 3 083640 인콘            1270 8     158.75 382   3.32                 0   
-    ## 4 097520 엠씨넥스       14700 -     -      5,920 2.48                 1.77
-    ## 5 101000 디엠씨          1575 -     -      1,602 0.98                 0   
-    ## 6 198440 고려시멘트~        3820 37    103.24 2,539 1.5                  1.44
+    ## 4 225530 보광산업        6280 265   23.7   1,698 3.7                  2.63
+    ## 5 263700 케어랩스       19900 1,095 18.17  5,059 3.93                 0   
+    ## 6 171120 라이온켐텍~        9600 211   45.5   5,866 1.64                 3.13
 
 ``` r
 # Save results as csv file
