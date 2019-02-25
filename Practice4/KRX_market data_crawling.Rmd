@@ -36,7 +36,7 @@ In developer's tool of KRX page, we can see the process that produces excel file
 ## Crawling process
 ```{r crwling}
 # Setting date
-date = '20190131'
+date = '20190222'
 
 # Put request url where we request OTP to download data on'gen_otp_url'
 gen_otp_url = "http://marketdata.krx.co.kr/contents/COM/GenerateOTP.jspx?"
@@ -72,8 +72,8 @@ down = POST(down_url, query = down_data, add_headers(referer = gen_otp_url)) %>%
 ## Save results as csv
 ```{r saving}
 # Change column names as English to avoid expression error
-colnames(down) = c('Market', 'Ticker', 'Name',
-                   'Industry', 'Market cap', 'Market cap Weight')
+colnames(down) = c('Market', 'Industry', 'No. of Listed issues',
+                   'Weight', 'Market Cap', 'Market Cap Weight')
 
 # Show results
 head(down)

@@ -48,7 +48,7 @@ Crawling process
 
 ``` r
 # Setting date
-date = '20190131'
+date = '20190222'
 
 # Put request url where we request OTP to download data on'gen_otp_url'
 gen_otp_url = "http://marketdata.krx.co.kr/contents/COM/GenerateOTP.jspx?"
@@ -86,22 +86,22 @@ Save results as csv
 
 ``` r
 # Change column names as English to avoid expression error
-colnames(down) = c('Market', 'Ticker', 'Name',
-                   'Industry', 'Market cap', 'Market cap Weight')
+colnames(down) = c('Market', 'Industry', 'No. of Listed issues',
+                   'Weight', 'Market Cap', 'Market Cap Weight')
 
 # Show results
 head(down)
 ```
 
     ## # A tibble: 6 x 6
-    ##   Market Ticker    Name Industry `Market cap` `Market cap Weight`
-    ##   <chr>  <chr>    <int>    <dbl>        <dbl>               <dbl>
-    ## 1 코스피 어업         4     0.44      1.37e12                0.09
-    ## 2 코스피 광업         1     0.11      1.47e11                0.01
-    ## 3 코스피 음식료품    48     5.33      2.73e13                1.88
-    ## 4 코스피 섬유의복    27     3         5.55e12                0.38
-    ## 5 코스피 종이목재    22     2.44      3.29e12                0.23
-    ## 6 코스피 화학       112    12.4       1.39e14                9.55
+    ##   Market Industry `No. of Listed is~ Weight `Market Cap` `Market Cap Weig~
+    ##   <chr>  <chr>                 <int>  <dbl>        <dbl>             <dbl>
+    ## 1 코스피 어업                      4   0.44      1.32e12              0.09
+    ## 2 코스피 광업                      1   0.11      1.54e11              0.01
+    ## 3 코스피 음식료품                 48   5.33      2.75e13              1.86
+    ## 4 코스피 섬유의복                 27   3         6.06e12              0.41
+    ## 5 코스피 종이목재                 22   2.44      3.38e12              0.23
+    ## 6 코스피 화학                    112  12.4       1.44e14              9.79
 
 ``` r
 # Save results as csv file
